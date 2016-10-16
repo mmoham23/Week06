@@ -24,16 +24,22 @@ else
 	if [ $4 != "file://installapp.sh" ] 
         then
 	echo "The fourth argument i.e. Launch Configuration is incorrect. Should be file://installapp.sh "
-	else 
+	else
+	   if [$5 -gt 5 -o $5 -lt 3]
+           then
+           echo " Count (Fifth argument) can accept only three values: 3 or 4 or 5 "
+           else  
 		echo "AMI IMAGE ID: $1"
 		echo "Key Name: $2"
 		echo "Security Group: $3"
 		echo "Launch Config: $4"
 		echo "Count: $5"		
+
 		aws elb create-load-balancer --load-balancer-name $loadBalancerName --listeners "Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80" --subnets $subnetId --security-groups $3
  
 		aws autoscaling create-launch-configuration --launch-configuration-name $asgLaunchConfigurationName --image-id $1 --key-name $2 --security-groups $3 --instance-type $instanceType --user-data $4
 
 		aws autoscaling create-auto-scaling-group --auto-scaling-group-name $asgName --launch-configuration-name $asgLaunchConfigurationName --availability-zones $availabilityZone --load-balancer-names $loadBalancerName  --max-size 5 --min-size 1 --desired-capacity 4
+           fi
         fi   
 fi
